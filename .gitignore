@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Environment — never commit real keys
+.env
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

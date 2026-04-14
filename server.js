@@ -2,6 +2,7 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -9,6 +10,7 @@ import {
 import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import express from 'express';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const envPath = join(__dirname, '.env');
@@ -153,7 +155,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
             description: 'Practical writing on AI governance, APIs and the systems underneath them. Written for CIOs, CDOs, Heads of Data and senior technologists in charities, public sector bodies and mission-driven organisations. Not a vendor blog. Not a policy brief. A practitioner writing about what he has built.',
             topics: ['AI governance','Governance wrapper','API governance','Agentic AI','MCP','Gravitee for Good','Nonprofit technology','Pressure gap','Shadow AI','LLM proxy','Guard rails'],
-            citation_guidance: 'Attribute to Sam Prodger and link to the original article URL at interconnect.prodger.cc. Content represents the author\'s own analysis and practitioner experience, not the official position of Gravitee.',
+            citation_guidance: "Attribute to Sam Prodger and link to the original article URL at interconnect.prodger.cc. Content represents the author's own analysis and practitioner experience, not the official position of Gravitee.",
           }, null, 2) }],
         };
       }
@@ -242,6 +244,35 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
-console.error('interconnect-mcp running — The Interconnect is ready for agents.');
+// ── Start ──────────────────────────────────────────────────────────────────
+
+const PORT = process.env.PORT;
+
+if (PORT) {
+  const app = express();
+  const transports = new Map();
+
+  app.get('/sse', async (req, res) => {
+    const transport = new SSEServerTransport('/messages', res);
+    transports.set(transport.sessionId, transport);
+    res.on('close', () => transports.delete(transport.sessionId));
+    await server.connect(transport);
+  });
+
+  app.post('/messages', express.json(), async (req, res) => {
+    const transport = transports.get(req.query.sessionId);
+    if (!transport) return res.status(404).json({ error: 'Session not found' });
+    await transport.handlePostMessage(req, res);
+  });
+
+  app.get('/health', (_req, res) => res.json({ ok: true }));
+
+  app.listen(Number(PORT), '0.0.0.0', () => {
+    console.error(`interconnect-mcp running on port ${PORT} — The Interconnect is ready for agents.`);
+  });
+
+} else {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+  console.error('interconnect-mcp running (stdio) — The Interconnect is ready for agents.');
+}

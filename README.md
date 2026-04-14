@@ -9,7 +9,7 @@ Exposes the blog's Ghost Content API as MCP tools so agents can read, search and
 The server runs publicly at:
 
 ```
-https://interconnect-mcp-uyq8mg.fly.dev/sse
+https://mcp.prodger.cc/sse
 ```
 
 No setup required. Add it to your MCP client config and connect.
@@ -30,7 +30,7 @@ In `~/.claude/settings.json`, add to `mcpServers`:
 ```json
 "interconnect": {
   "type": "sse",
-  "url": "https://interconnect-mcp-uyq8mg.fly.dev/sse"
+  "url": "https://mcp.prodger.cc/sse"
 }
 ```
 
@@ -43,7 +43,7 @@ In `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "interconnect": {
       "type": "sse",
-      "url": "https://interconnect-mcp-uyq8mg.fly.dev/sse"
+      "url": "https://mcp.prodger.cc/sse"
     }
   }
 }

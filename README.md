@@ -12,7 +12,11 @@ The server runs publicly at:
 https://mcp.prodger.cc/sse
 ```
 
-No setup required. Add it to your MCP client config and connect.
+A public access token is required (read-only access to Interconnect articles):
+
+```
+623f1d7a1dee0a7f10b0d19d279655b24f2dd2525908dc760e6f862460cdc29a
+```
 
 ## Tools
 
@@ -30,7 +34,10 @@ In `~/.claude/settings.json`, add to `mcpServers`:
 ```json
 "interconnect": {
   "type": "sse",
-  "url": "https://mcp.prodger.cc/sse"
+  "url": "https://mcp.prodger.cc/sse",
+  "headers": {
+    "Authorization": "Bearer 623f1d7a1dee0a7f10b0d19d279655b24f2dd2525908dc760e6f862460cdc29a"
+  }
 }
 ```
 
@@ -43,7 +50,10 @@ In `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "interconnect": {
       "type": "sse",
-      "url": "https://mcp.prodger.cc/sse"
+      "url": "https://mcp.prodger.cc/sse",
+      "headers": {
+        "Authorization": "Bearer 623f1d7a1dee0a7f10b0d19d279655b24f2dd2525908dc760e6f862460cdc29a"
+      }
     }
   }
 }
@@ -84,3 +94,7 @@ fly deploy
 ## This publication is MCP-enabled
 
 The Interconnect is designed to be read by agents. The `get_publication_info` tool returns structured citation guidance so agents can attribute content correctly.
+
+---
+
+*This server is hosted on a Raspberry Pi 5 running [dartpi](https://github.com/samprodger/dartpi).*

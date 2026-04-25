@@ -1,0 +1,45 @@
+name: Lint
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: YAML lint
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: .
+          config_data: |
+            extends: default
+            rules:
+              line-length:
+                max: 200
+                level: warning
+              document-start: disable
+              truthy:
+                check-keys: false
+              comments:
+                min-spaces-from-content: 1
+              indentation:
+                spaces: 2
+                indent-sequences: consistent
+              braces:
+                max-spaces-inside: 1
+              brackets:
+                max-spaces-inside: 1
+
+      - name: Shell lint (shellcheck)
+        run: |
+          sudo apt-get install -y shellcheck -q
+          find . -name "*.sh" \
+               -not -path "./.git/*" \
+               -not -path "*/node_modules/*" \
+               -print0 \
+          | xargs -0 --no-run-if-empty shellcheck

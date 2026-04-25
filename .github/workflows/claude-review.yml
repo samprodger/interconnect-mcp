@@ -116,7 +116,7 @@ jobs:
 
       - name: Submit review
         if: steps.secret_check.outputs.skip != 'true' && steps.eligibility.outputs.skip_oversize != 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           ELIGIBLE: ${{ steps.eligibility.outputs.eligible }}
           REASON: ${{ steps.eligibility.outputs.reason }}
@@ -145,7 +145,7 @@ jobs:
 
       - name: Comment-only on oversize
         if: steps.eligibility.outputs.skip_oversize == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.issues.createComment({
